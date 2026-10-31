@@ -4,7 +4,7 @@ A simple command-line task manager written in Rust.
 
 ## Status
 
-🚧 **In development** — Milestone 2 complete (interactive terminal menu).
+🚧 **In development** — Milestone 3 complete (adding and listing tasks).
 
 ```bash
 cargo run
@@ -19,6 +19,13 @@ Taskforge v0.1.0 - a simple task manager
 3. Complete a task
 4. Delete a task
 5. Exit
+> Description: Buy milk
+Added task #1.
+> Description: Water the plants
+Added task #2.
+> 2
+[ ] #1 Buy milk
+[ ] #2 Water the plants
 > 
 ```
 
@@ -38,11 +45,17 @@ The binary is then available at `target/release/taskforge`.
 cargo run
 ```
 
+## Features
+
+- Interactive terminal menu
+- Add tasks with automatic numbering
+- List all tasks with completion status
+
 ## Roadmap
 
 - [x] Milestone 1 — Project initialization and Cargo basics
 - [x] Milestone 2 — Interactive terminal menu
-- [ ] Milestone 3 — Adding and listing tasks
+- [x] Milestone 3 — Adding and listing tasks
 - [ ] Milestone 4 — Completing and deleting tasks
 - [ ] Milestone 5 — Basic error handling
 - [ ] Milestone 6 — JSON persistence

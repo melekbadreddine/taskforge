@@ -1,15 +1,26 @@
+mod task;
+
 use std::io::{self, Write};
+
+use crate::task::Task;
 
 fn main() {
     println!("Taskforge v0.1.0 - a simple task manager");
+
+    // All tasks live here, in memory, until Milestone 6 adds persistence.
+    let mut tasks: Vec<Task> = Vec::new();
 
     loop {
         print_menu();
         let choice = read_input("> ");
 
         match choice.as_str() {
-            "1" => println!("Adding tasks will arrive in the next milestone."),
-            "2" => println!("Listing tasks will arrive in the next milestone."),
+            "1" => {
+                let description = read_input("Description: ");
+                let id = task::add_task(&mut tasks, &description);
+                println!("Added task #{id}.");
+            }
+            "2" => task::print_tasks(&tasks),
             "3" => println!("Completing tasks will arrive in the next milestone."),
             "4" => println!("Deleting tasks will arrive in the next milestone."),
             "5" => {
