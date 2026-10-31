@@ -21,8 +21,32 @@ fn main() {
                 println!("Added task #{id}.");
             }
             "2" => task::print_tasks(&tasks),
-            "3" => println!("Completing tasks will arrive in the next milestone."),
-            "4" => println!("Deleting tasks will arrive in the next milestone."),
+            "3" => {
+                let input = read_input("Task number to complete: ");
+                match input.parse::<u64>() {
+                    Ok(id) => {
+                        if task::complete_task(&mut tasks, id) {
+                            println!("Task #{id} marked as completed.");
+                        } else {
+                            println!("No task with number {id}.");
+                        }
+                    }
+                    Err(_) => println!("'{input}' is not a valid task number."),
+                }
+            }
+            "4" => {
+                let input = read_input("Task number to delete: ");
+                match input.parse::<u64>() {
+                    Ok(id) => {
+                        if task::delete_task(&mut tasks, id) {
+                            println!("Task #{id} deleted.");
+                        } else {
+                            println!("No task with number {id}.");
+                        }
+                    }
+                    Err(_) => println!("'{input}' is not a valid task number."),
+                }
+            }
             "5" => {
                 println!("Goodbye!");
                 break;

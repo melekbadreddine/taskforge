@@ -38,3 +38,19 @@ pub fn print_tasks(tasks: &[Task]) {
         println!("[{status}] #{id} {description}");
     }
 }
+
+pub fn complete_task(tasks: &mut [Task], id: u64) -> bool {
+    for task in tasks {
+        if task.id == id {
+            task.completed = true;
+            return true;
+        }
+    }
+    false
+}
+
+pub fn delete_task(tasks: &mut Vec<Task>, id: u64) -> bool {
+    let original_len = tasks.len();
+    tasks.retain(|task| task.id != id);
+    tasks.len() < original_len
+}
