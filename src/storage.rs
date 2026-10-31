@@ -1,3 +1,6 @@
+//! Loading and saving the task list as a JSON file.
+//!
+//! `main.rs` decides *when* to save (on exit); this module decides *how*.
 use std::fs;
 use std::path::Path;
 

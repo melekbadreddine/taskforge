@@ -1,3 +1,7 @@
+/// A task in the to-do list.
+///
+/// The `id` is stable across deletions (ids are never reused), `completed`
+/// is a simple flag, and the whole list is serialized to JSON as-is.
 #[derive(Debug, serde::Serialize, serde::Deserialize)]
 pub struct Task {
     pub id: u64,
@@ -14,17 +18,23 @@ impl Task {
         }
     }
 
+    /// Returns the next unused task id for the given list
+    /// (the highest existing id plus 1, or 1 for an empty list).
     pub fn next_id(tasks: &[Task]) -> u64 {
         tasks.iter().map(|task| task.id).max().unwrap_or(0) + 1
     }
 }
 
+/// Adds a new task with the given description and returns its id.
+/// The id is chosen as the next unused one and never reused.
 pub fn add_task(tasks: &mut Vec<Task>, description: &str) -> u64 {
     let id = Task::next_id(tasks);
     tasks.push(Task::new(id, description));
     id
 }
 
+/// Prints all tasks, one per line, as `[\ |x] #id description`.
+/// Prints a hint instead when the list is empty.
 pub fn print_tasks(tasks: &[Task]) {
     if tasks.is_empty() {
         println!("No tasks yet. Add one with option 1.");
@@ -39,6 +49,8 @@ pub fn print_tasks(tasks: &[Task]) {
     }
 }
 
+/// Marks the task with the given id as completed.
+/// Returns `true` if such a task existed, `false` otherwise.
 pub fn complete_task(tasks: &mut [Task], id: u64) -> bool {
     for task in tasks {
         if task.id == id {
@@ -49,6 +61,8 @@ pub fn complete_task(tasks: &mut [Task], id: u64) -> bool {
     false
 }
 
+/// Deletes the task with the given id.
+/// Returns `true` if such a task existed and was removed, `false` otherwise.
 pub fn delete_task(tasks: &mut Vec<Task>, id: u64) -> bool {
     let original_len = tasks.len();
     tasks.retain(|task| task.id != id);
