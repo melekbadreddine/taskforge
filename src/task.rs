@@ -54,3 +54,70 @@ pub fn delete_task(tasks: &mut Vec<Task>, id: u64) -> bool {
     tasks.retain(|task| task.id != id);
     tasks.len() < original_len
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn first_task_gets_id_1() {
+        let mut tasks = Vec::new();
+        let id = add_task(&mut tasks, "Buy milk");
+
+        assert_eq!(id, 1);
+        assert_eq!(tasks.len(), 1);
+        assert_eq!(tasks[0].description, "Buy milk");
+        assert!(!tasks[0].completed);
+    }
+
+    #[test]
+    fn ids_keep_increasing_after_deletion() {
+        let mut tasks = Vec::new();
+        add_task(&mut tasks, "Buy milk");
+        add_task(&mut tasks, "Water the plants");
+        delete_task(&mut tasks, 1);
+
+        let id = add_task(&mut tasks, "Wash the car");
+        assert_eq!(id, 3);
+    }
+
+    #[test]
+    fn complete_task_marks_the_matching_task() {
+        let mut tasks = Vec::new();
+        add_task(&mut tasks, "Buy milk");
+        add_task(&mut tasks, "Water the plants");
+
+        assert!(complete_task(&mut tasks, 2));
+        assert!(tasks[1].completed);
+        assert!(!tasks[0].completed);
+    }
+
+    #[test]
+    fn complete_task_returns_false_for_unknown_id() {
+        let mut tasks = Vec::new();
+        add_task(&mut tasks, "Buy milk");
+
+        assert!(!complete_task(&mut tasks, 42));
+        assert!(!tasks[0].completed);
+    }
+
+    #[test]
+    fn delete_task_removes_only_the_matching_task() {
+        let mut tasks = Vec::new();
+        add_task(&mut tasks, "Buy milk");
+        add_task(&mut tasks, "Water the plants");
+
+        assert!(delete_task(&mut tasks, 1));
+        assert_eq!(tasks.len(), 1);
+        assert_eq!(tasks[0].description, "Water the plants");
+    }
+
+    #[test]
+    fn delete_task_returns_false_for_unknown_id() {
+        let mut tasks = Vec::new();
+        add_task(&mut tasks, "Buy milk");
+
+        assert!(!delete_task(&mut tasks, 42));
+        assert_eq!(tasks.len(), 1);
+    }
+}

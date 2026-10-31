@@ -38,3 +38,57 @@ pub fn save_tasks(path: &str, tasks: &[Task]) -> Result<(), String> {
         Err(error) => Err(error.to_string()),
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::task::{add_task, complete_task};
+
+    /// Builds a path inside the system temp directory, unique per test run.
+    fn temp_file(name: &str) -> String {
+        std::env::temp_dir()
+            .join(format!("taskforge-test-{}-{name}.json", std::process::id()))
+            .display()
+            .to_string()
+    }
+
+    #[test]
+    fn save_and_load_roundtrip_preserves_tasks() {
+        let path = temp_file("roundtrip");
+
+        let mut saved = Vec::new();
+        add_task(&mut saved, "Buy milk");
+        add_task(&mut saved, "Water the plants");
+        complete_task(&mut saved, 1);
+
+        save_tasks(&path, &saved).expect("saving should succeed");
+
+        let loaded = load_tasks(&path);
+        assert_eq!(loaded.len(), 2);
+        assert_eq!(loaded[0].id, 1);
+        assert_eq!(loaded[0].description, "Buy milk");
+        assert!(loaded[0].completed);
+        assert_eq!(loaded[1].id, 2);
+        assert_eq!(loaded[1].description, "Water the plants");
+        assert!(!loaded[1].completed);
+
+        fs::remove_file(&path).expect("cleanup should succeed");
+    }
+
+    #[test]
+    fn load_returns_empty_list_for_missing_file() {
+        let tasks = load_tasks(&temp_file("missing"));
+        assert!(tasks.is_empty());
+    }
+
+    #[test]
+    fn load_returns_empty_list_for_corrupted_file() {
+        let path = temp_file("corrupted");
+        fs::write(&path, "this is not json").expect("writing the test file should succeed");
+
+        let tasks = load_tasks(&path);
+        assert!(tasks.is_empty());
+
+        fs::remove_file(&path).expect("cleanup should succeed");
+    }
+}
