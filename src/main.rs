@@ -1,14 +1,19 @@
+mod storage;
 mod task;
 
 use std::io::{self, Write};
 
 use crate::task::Task;
 
+const TASKS_FILE: &str = "tasks.json";
+
 fn main() {
     println!("Taskforge v0.1.0 - a simple task manager");
 
-    // All tasks live here, in memory, until Milestone 6 adds persistence.
-    let mut tasks: Vec<Task> = Vec::new();
+    let mut tasks: Vec<Task> = storage::load_tasks(TASKS_FILE);
+    if !tasks.is_empty() {
+        println!("Loaded {} task(s) from {TASKS_FILE}.", tasks.len());
+    }
 
     loop {
         print_menu();
@@ -44,6 +49,10 @@ fn main() {
                 }
             }
             "5" => {
+                match storage::save_tasks(TASKS_FILE, &tasks) {
+                    Ok(()) => println!("Tasks saved to {TASKS_FILE}."),
+                    Err(error) => println!("Warning: could not save tasks: {error}"),
+                }
                 println!("Goodbye!");
                 break;
             }
