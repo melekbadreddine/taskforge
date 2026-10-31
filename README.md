@@ -4,7 +4,7 @@ A simple command-line task manager written in Rust.
 
 ## Status
 
-🚧 **In development** — Milestone 4 complete (completing and deleting tasks).
+🚧 **In development** — Milestone 5 complete (input validation and error handling).
 
 ```bash
 cargo run
@@ -60,6 +60,7 @@ cargo run
 - List all tasks with completion status
 - Mark tasks as completed by number
 - Delete tasks by number
+- Input validation with clear error messages (empty descriptions, invalid task numbers)
 
 ## Roadmap
 
@@ -67,7 +68,7 @@ cargo run
 - [x] Milestone 2 — Interactive terminal menu
 - [x] Milestone 3 — Adding and listing tasks
 - [x] Milestone 4 — Completing and deleting tasks
-- [ ] Milestone 5 — Basic error handling
+- [x] Milestone 5 — Basic error handling
 - [ ] Milestone 6 — JSON persistence
 - [ ] Milestone 7 — Tests and final documentation
 

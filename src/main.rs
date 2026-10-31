@@ -17,34 +17,30 @@ fn main() {
         match choice.as_str() {
             "1" => {
                 let description = read_input("Description: ");
-                let id = task::add_task(&mut tasks, &description);
-                println!("Added task #{id}.");
+                if description.is_empty() {
+                    println!("Task description cannot be empty.");
+                } else {
+                    let id = task::add_task(&mut tasks, &description);
+                    println!("Added task #{id}.");
+                }
             }
             "2" => task::print_tasks(&tasks),
             "3" => {
-                let input = read_input("Task number to complete: ");
-                match input.parse::<u64>() {
-                    Ok(id) => {
-                        if task::complete_task(&mut tasks, id) {
-                            println!("Task #{id} marked as completed.");
-                        } else {
-                            println!("No task with number {id}.");
-                        }
+                if let Some(id) = read_task_id("Task number to complete: ") {
+                    if task::complete_task(&mut tasks, id) {
+                        println!("Task #{id} marked as completed.");
+                    } else {
+                        println!("No task with number {id}.");
                     }
-                    Err(_) => println!("'{input}' is not a valid task number."),
                 }
             }
             "4" => {
-                let input = read_input("Task number to delete: ");
-                match input.parse::<u64>() {
-                    Ok(id) => {
-                        if task::delete_task(&mut tasks, id) {
-                            println!("Task #{id} deleted.");
-                        } else {
-                            println!("No task with number {id}.");
-                        }
+                if let Some(id) = read_task_id("Task number to delete: ") {
+                    if task::delete_task(&mut tasks, id) {
+                        println!("Task #{id} deleted.");
+                    } else {
+                        println!("No task with number {id}.");
                     }
-                    Err(_) => println!("'{input}' is not a valid task number."),
                 }
             }
             "5" => {
@@ -67,13 +63,37 @@ fn print_menu() {
     println!("5. Exit");
 }
 
+/// Reads one line of input, or "" when the input stream has ended.
 fn read_input(prompt: &str) -> String {
     print!("{prompt}");
     io::stdout().flush().expect("failed to flush stdout");
 
     let mut input = String::new();
-    io::stdin()
-        .read_line(&mut input)
-        .expect("failed to read from stdin");
-    input.trim().to_string()
+    match io::stdin().read_line(&mut input) {
+        Ok(0) => String::from("5"), // No more input: behave as if the user chose Exit.
+        Ok(_) => input.trim().to_string(),
+        Err(error) => {
+            println!("Error while reading input: {error}");
+            String::from("5")
+        }
+    }
+}
+
+/// Reads a task number from the user and validates it.
+/// Returns `None` (with an error message already printed) if the input is not a number.
+fn read_task_id(prompt: &str) -> Option<u64> {
+    let input = read_input(prompt);
+
+    if input.is_empty() {
+        println!("No task number entered.");
+        return None;
+    }
+
+    match input.parse::<u64>() {
+        Ok(id) => Some(id),
+        Err(_) => {
+            println!("'{input}' is not a valid task number.");
+            None
+        }
+    }
 }
